@@ -25,7 +25,7 @@ io.on('connection', function (socket) {
   socket.on('username entered', function (_name) {
     users[socket.id].name = (_name !== '') ? _name : default_name;
 
-    io.emit('user connected', users[socket.id].name);
+    io.emit('user connected', users[socket.id]);
 
     console.log('Client Set Username (ID: ' + socket.id + ', Name: ' + users[socket.id].name + ').');
   });
@@ -38,7 +38,7 @@ io.on('connection', function (socket) {
   });
 
   socket.on('disconnect', function () {
-    io.emit('user disconnected', users[socket.id].name);
+    io.emit('user disconnected', users[socket.id]);
 
     console.log('Client Disconnected (ID: ' + socket.id + ', Name: ' + users[socket.id].name + ').');
 

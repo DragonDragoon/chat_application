@@ -1,153 +1,208 @@
 <!doctype html>
 <html>
-  <head>
-    <title>Socket.IO chat</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font: 13px Helvetica, Arial; }
-      /*form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      */form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages li { padding: 5px 10px; }
-      #messages li:nth-child(odd) { background: #eee; }
-      
-#name_background {
-    background: rgba(0, 0, 0, 0.5) none repeat scroll 0 0;
-    height: 100%;
-    left: 0;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1;
-}
+<head>
+  <title>Socket.IO chat</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font: 13px Helvetica, Arial;
+    }
+
+    form input {
+      border: 0;
+      padding: 10px;
+      width: 90%;
+      margin-right: .5%;
+    }
+
+    form button {
+      width: 9%;
+      background: rgb(130, 224, 255);
+      border: none;
+      padding: 10px;
+    }
 
 
-#namebox {
-    background: rgba(240, 240, 240, 1) none repeat scroll 0 0;
-    border-radius: 20px;
-    bottom: 0;
-    box-shadow: 0 0 50px 35px rgba(0, 0, 0, 0.5);
-    height: 50%;
-    left: 0;
-    margin: auto;
-    position: fixed;
-    right: 0;
-    top: 0;
-    width: 50%;
-    z-index: 2;
-}
+    #messages {
+      bottom: 44px;
+      left: 0;
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      position: absolute;
+      right: 20%;
+      top: 0;
+    }
 
-#namebox > h1 {
-    font-size: 4em;
-    left: 0;
-    margin: auto;
-    position: absolute;
-    right: 0;
-    text-align: center;
-    top: 25%;
-}
+      #messages li {
+        padding: 5px 10px;
+      }
 
+        #messages li:nth-child(odd) {
+          background: #eee;
+        }
 
-#name_form {
-    background: rgba(0, 0, 0, 1) none repeat scroll 0 0;
-    left: 0;
-    margin: auto;
-    position: absolute;
-    right: 0;
-    top: 75%;
-    padding: 3px;
-}
-#message_form {
-    background: #000 none repeat scroll 0 0;
-    bottom: 0;
-    padding: 3px;
-    position: fixed;
-    width: 100%;
-}
-    </style>
-  </head>
-  <body>
-    <ul id="messages"></ul>
-    <div id="name_background" style="display: none">
-      <div id="namebox">
-        <h1>Please Enter a Username:</h1>
-        <form id="name_form" action="">
-          <input id="name_entry"><button>Send</button>
-        </form>
-      </div>
+    #name_background {
+      background: rgba(0, 0, 0, 0.5) none repeat scroll 0 0;
+      height: 100%;
+      left: 0;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1;
+    }
+
+    #namebox {
+      background: rgba(240, 240, 240, 1) none repeat scroll 0 0;
+      border-radius: 20px;
+      bottom: 0;
+      box-shadow: 0 0 50px 35px rgba(0, 0, 0, 0.5);
+      height: 50%;
+      left: 0;
+      margin: auto;
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: 50%;
+      z-index: 2;
+    }
+
+      #namebox > h1 {
+        font-size: 4em;
+        left: 0;
+        margin: auto;
+        position: absolute;
+        right: 0;
+        text-align: center;
+        top: 25%;
+      }
+
+    #name_form {
+      background: rgba(0, 0, 0, 1) none repeat scroll 0 0;
+      left: 0;
+      margin: auto;
+      position: absolute;
+      right: 0;
+      top: 75%;
+      padding: 3px;
+    }
+
+    #message_form {
+      background: #000 none repeat scroll 0 0;
+      bottom: 0;
+      left: 0;
+      padding: 3px;
+      position: absolute;
+      right: 0;
+    }
+
+    #online_users {
+      list-style-type: none;
+      border-left: 3px solid rgba(0, 0, 0, 1);
+      bottom: 40px;
+      box-shadow: 0 0 10px 0 rgba(0, 0, 0, 1);
+      left: 80%;
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+    
+      #online_users h1 {
+        text-align: center;
+      }
+  </style>
+</head>
+<body>
+  <ul id="messages"></ul>
+  <ul id="online_users">
+    <li><h1>Users Online</h1></li>
+  </ul>
+  <div id="name_background" style="display: none">
+    <div id="namebox">
+      <h1>Please Enter a Username:</h1>
+      <form id="name_form" action="">
+        <input id="name_entry"><button>Send</button>
+      </form>
     </div>
-    <form id="message_form" action="">
-      <input id="m" autocomplete="off"><button>Send</button>
-    </form>
-    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-    <script>
-      'use strict';
+  </div>
+  <form id="message_form" action="">
+    <input id="m" autocomplete="off"><button>Send</button>
+  </form>
+  <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <script>
+    'use strict';
 
-      var socket = io();
+    var socket = io();
 
-      var user = {};
+    var user = {};
 
-      $('#message_form').submit(function () {;
-        socket.emit('chat message', $('#m').val());
+    $('#message_form').submit(function () {;
+      socket.emit('chat message', $('#m').val());
 
-        $('#messages').append($('<li>').text(user.name + ': ' + $('#m').val()));
+      $('#messages').append($('<li>').text(user.name + ': ' + $('#m').val()));
 
-        $('#m').val('');
+      $('#m').val('');
+
+      return false;
+    });
+
+    socket.on('chat message', function (username, msg) {
+      $('#messages').append($('<li>').text(username + ': ' + msg));
+    });
+
+    socket.on('user connected', function (user_info) {
+      $('#messages').append($('<li>').text(user_info.name + ' connected.'));
+      $('#online_users').append($('<li>').text(user_info.name).attr('id', 'onlineUser-' + user_info.id));
+    });
+
+    socket.on('user disconnected', function (user_info) {
+      $('#messages').append($('<li>').text(user_info.name + ' disconnected.'));
+      $('#onlineUser-' + user_info.id).remove();
+    });
+
+    socket.on('enter username', function (user_info) {
+      $('#name_background').css('display', 'block');
+
+      user.name = user_info.name;
+
+      $('#name_form').submit(function () {
+        if ($('#name_entry').val() !== '') {
+          user.name = $('#name_entry').val();
+        }
+
+        socket.emit('username entered', user.name);
+
+        $('#name_background').css('display', 'none');
 
         return false;
       });
+    });
 
-      socket.on('chat message', function(username, msg){
-        $('#messages').append($('<li>').text(username + ': ' + msg));
-      });
+    $('#m').on('input', function () {
+      if (this.value.length > 0) {
+        socket.emit('user typing', $('#m').val());
+      } else {
+        socket.emit('user not typing');
+      }
+    });
 
-      socket.on('user connected', function (username) {
-        $('#messages').append($('<li>').text(username + ' connected.'));
-      });
+    socket.on('user is typing', function (user_info, msg) {
+      if ($('#isTyping-' + user_info.id).length === 0) {
+        $('#messages').append($('<li>').text(user_info.name + ': ' + msg + '...').attr('id', 'isTyping-' + user_info.id));
+      } else {
+        $('#isTyping-' + user_info.id).text(user_info.name + ': ' + msg + '...');
+      }
+    });
 
-      socket.on('user disconnected', function (username) {
-        $('#messages').append($('<li>').text(username + ' disconnected.'));
-      });
-
-      socket.on('enter username', function (user_info) {
-        $('#name_background').css('display', 'block');
-
-        user.name = user_info.name;
-
-        $('#name_form').submit(function () {
-          if ($('#name_entry').val() !== '') {
-            user.name = $('#name_entry').val();
-          }
-
-          socket.emit('username entered', user.name);
-
-          $('#name_background').css('display', 'none');
-
-          return false;
-        });
-      });
-
-      $('#m').on('input', function () {
-        if (this.value.length > 0) {
-          socket.emit('user typing', $('#m').val());
-        } else {
-          socket.emit('user not typing');
-        }
-      });
-
-      socket.on('user is typing', function (user_info, msg) {
-        if ($('#isTyping-' + user_info.id).length === 0) {
-          $('#messages').append($('<li>').text(user_info.name + ': ' + msg + '...').attr('id', 'isTyping-' + user_info.id));
-        } else {
-          $('#isTyping-' + user_info.id).text(user_info.name + ': ' + msg + '...');
-        }
-      });
-
-      socket.on('user is not typing', function (user_info) {
-        $('#isTyping-' + user_info.id).remove();
-      });
-    </script>
-  </body>
+    socket.on('user is not typing', function (user_info) {
+      $('#isTyping-' + user_info.id).remove();
+    });
+  </script>
+</body>
 </html>
