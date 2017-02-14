@@ -111,10 +111,10 @@
         $('#messages').append($('<li>').text(username + ' disconnected.'));
       });
 
-      socket.on('enter username', function (default_name) {
+      socket.on('enter username', function (user_info) {
         $('#name_background').css('display', 'block');
 
-        user.name = default_name;
+        user.name = user_info.name;
 
         $('#name_form').submit(function () {
           if ($('#name_entry').val() !== '') {
@@ -127,6 +127,26 @@
 
           return false;
         });
+      });
+
+      $('#m').on('input', function () {
+        if (this.value.length > 0) {
+          socket.emit('user typing', $('#m').val());
+        } else {
+          socket.emit('user not typing');
+        }
+      });
+
+      socket.on('user is typing', function (user_info, msg) {
+        if ($('#isTyping-' + user_info.id).length === 0) {
+          $('#messages').append($('<li>').text(user_info.name + ': ' + msg + '...').attr('id', 'isTyping-' + user_info.id));
+        } else {
+          $('#isTyping-' + user_info.id).text(user_info.name + ': ' + msg + '...');
+        }
+      });
+
+      socket.on('user is not typing', function (user_info) {
+        $('#isTyping-' + user_info.id).remove();
       });
     </script>
   </body>

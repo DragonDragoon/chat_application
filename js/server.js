@@ -16,15 +16,14 @@ io.on('connection', function (socket) {
   console.log('Client Connected (ID: ' + socket.id + ').');
 
   users[socket.id] = {
+    id: socket.id,
     name: default_name
   };
 
-  socket.emit('enter username', default_name);
+  socket.emit('enter username', users[socket.id]);
 
   socket.on('username entered', function (_name) {
-    users[socket.id] = {
-      name: (_name !== '') ? _name : default_name
-    };
+    users[socket.id].name = (_name !== '') ? _name : default_name;
 
     io.emit('user connected', users[socket.id].name);
 
@@ -32,6 +31,7 @@ io.on('connection', function (socket) {
   });
 
   socket.on('chat message', function (msg) {
+    io.emit('user is not typing', users[socket.id]);
     socket.broadcast.emit('chat message', users[socket.id].name, msg);
 
     console.log(users[socket.id].name + ": " + msg);
@@ -43,6 +43,14 @@ io.on('connection', function (socket) {
     console.log('Client Disconnected (ID: ' + socket.id + ', Name: ' + users[socket.id].name + ').');
 
     delete users[socket.id];
+  });
+
+  socket.on('user typing', function (msg) {
+    io.emit('user is typing', users[socket.id], msg);
+  });
+
+  socket.on('user not typing', function () {
+    io.emit('user is not typing', users[socket.id]);
   });
 });
 
