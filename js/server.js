@@ -19,7 +19,7 @@ io.on('connection', function (socket) {
     name: default_name
   };
 
-  socket.emit('enter username');
+  socket.emit('enter username', default_name);
 
   socket.on('username entered', function (_name) {
     users[socket.id] = {
@@ -32,7 +32,7 @@ io.on('connection', function (socket) {
   });
 
   socket.on('chat message', function (msg) {
-    io.emit('chat message', users[socket.id].name, msg);
+    socket.broadcast.emit('chat message', users[socket.id].name, msg);
 
     console.log(users[socket.id].name + ": " + msg);
   });
@@ -41,6 +41,8 @@ io.on('connection', function (socket) {
     io.emit('user disconnected', users[socket.id].name);
 
     console.log('Client Disconnected (ID: ' + socket.id + ', Name: ' + users[socket.id].name + ').');
+
+    delete users[socket.id];
   });
 });
 

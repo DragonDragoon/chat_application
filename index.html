@@ -87,8 +87,13 @@
 
       var socket = io();
 
-      $('#message_form').submit(function(){
+      var user = {};
+
+      $('#message_form').submit(function () {;
         socket.emit('chat message', $('#m').val());
+
+        $('#messages').append($('<li>').text(user.name + ': ' + $('#m').val()));
+
         $('#m').val('');
 
         return false;
@@ -106,10 +111,17 @@
         $('#messages').append($('<li>').text(username + ' disconnected.'));
       });
 
-      socket.on('enter username', function () {
+      socket.on('enter username', function (default_name) {
         $('#name_background').css('display', 'block');
+
+        user.name = default_name;
+
         $('#name_form').submit(function () {
-          socket.emit('username entered', $('#name_entry').val());
+          if ($('#name_entry').val() !== '') {
+            user.name = $('#name_entry').val();
+          }
+
+          socket.emit('username entered', user.name);
 
           $('#name_background').css('display', 'none');
 
